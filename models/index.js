@@ -5,7 +5,7 @@ const models          = {};
 const mongoose      = require('mongoose');
 const CONFIG        = require('../config/config');
 
-if(CONFIG.db_host != ''){
+if(CONFIG.MONGO_HOST != ''){
     let files = fs
       .readdirSync(__dirname)
       .filter((file) => {
@@ -17,15 +17,16 @@ if(CONFIG.db_host != ''){
         models[model_name] = require('./'+file);
     });
 
-    mongoose.Promise = global.Promise; //set mongo up to use promises
-    const mongo_location = 'mongodb://'+CONFIG.db_host+':'+CONFIG.db_port+'/'+CONFIG.db_name;
+    const mongo_location = 'mongodb://'+CONFIG.MONGO_HOST+':'+CONFIG.MONGO_PORT + '/'+CONFIG.DB_NAME;
 
     mongoose.connect(mongo_location).catch((err)=>{
         console.log('*** Can Not Connect to Mongo Server:', mongo_location)
     })
 
     let db = mongoose.connection;
+
     module.exports = db;
+
     db.once('open', ()=>{
         console.log('Connected to mongo at '+mongo_location);
     })
@@ -37,4 +38,5 @@ if(CONFIG.db_host != ''){
     console.log("No Mongo Credentials Given");
 }
 
+// console.log(db)
 module.exports = models;

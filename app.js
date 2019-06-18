@@ -4,27 +4,37 @@ const bodyParser 	= require('body-parser');
 const passport      = require('passport');
 const pe            = require('parse-error');
 const cors          = require('cors');
+const expressValidator  = require('express-validator');
+
 const v1 = require('./routes/v1');
 
 const app = express();
 
 const CONFIG = require('./config/config');
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
-// app.use(express.static(path.join(__dirname, 'public')));
 
-//Passport
-app.use(passport.initialize());
-
-//Log Env
-console.log("Environment:", CONFIG.app)
-//DATABASE
 const models = require("./models");
 
 // CORS
 app.use(cors());
+
+app.use(expressValidator({
+    customValidators: {
+        isValidMongoId: function(value) {
+            var regex = /^[0-9a-f]{24}$/;
+            return regex.test(value);
+        },
+        isValidEmail: function(value) {
+            if (!value) return false;
+            var value = value.trim();
+            var email_regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            return email_regex.test(value);
+        },
+    }
+}));
 
 app.use('/v1', v1);
 
