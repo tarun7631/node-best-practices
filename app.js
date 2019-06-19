@@ -21,6 +21,8 @@ const models = require("./models");
 // CORS
 app.use(cors());
 
+console.log('hlo') ;
+
 app.use(expressValidator({
     customValidators: {
         isValidMongoId: function(value) {
